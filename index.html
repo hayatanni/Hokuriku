@@ -7,56 +7,70 @@
 <title>HOKURIKU &amp; HIDA TRIP 2026</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-(function(){
-  const fmt = (n)=> new Intl.NumberFormat('ja-JP').format(Math.round(n)) + '円';
-  const num = (v)=> {
-    const n = parseInt(String(v||'0').replace(/,/g,''),10);
+(() => {
+  const fmt = (n) => new Intl.NumberFormat('ja-JP').format(Math.round(Number(n) || 0)) + '円';
+  const num = (v) => {
+    const s = String(v ?? '').replace(/,/g, '').trim();
+    const n = Number(s);
     return Number.isFinite(n) ? n : 0;
   };
-  const $ = (id)=> document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
 
-  function calc(){
-    const inova  = num($('h_inova')?.value);
-    const utatei = num($('h_utatei')?.value);
-    const people = Math.max(1, num($('h_people')?.value) || 1);
+  function initCostCalc() {
+    function calc() {
+      const inova  = num($('h_inova')?.value);
+      const utatei = num($('h_utatei')?.value);
+      const people = Math.max(1, Math.round(num($('h_people')?.value) || 1));
 
-    const lodgingTotal = inova + utatei;
-    const lodgingPP = lodgingTotal / people;
+      const lodgingTotal = inova + utatei;
+      const lodgingPPExact = lodgingTotal / people;
+      const lodgingPPRounded = Math.round(lodgingPPExact);
 
-    if($('h_total')) $('h_total').textContent = fmt(lodgingTotal);
-    if($('c_lodging_pp')) $('c_lodging_pp').value = String(Math.round(lodgingPP));
-    if($('c_lodging_pp_fmt')) $('c_lodging_pp_fmt').textContent = fmt(lodgingPP);
-    if($('c_lodging_pp_inline')) $('c_lodging_pp_inline').textContent = fmt(lodgingPP);
+      $('h_total')?.textContent = fmt(lodgingTotal);
 
-    if($('calcLodgingFormula')){
-      $('calcLodgingFormula').textContent =
-        `(${inova.toLocaleString('ja-JP')} + ${utatei.toLocaleString('ja-JP')}) ÷ ${people} = ` +
-        `${lodgingTotal.toLocaleString('ja-JP')} ÷ ${people} = ${Math.round(lodgingPP).toLocaleString('ja-JP')}円`;
+      const ppEl = $('c_lodging_pp');
+      if (ppEl) ppEl.value = String(lodgingPPRounded);
+
+      $('c_lodging_pp_fmt')?.textContent = fmt(lodgingPPExact);
+      $('c_lodging_pp_inline')?.textContent = fmt(lodgingPPExact);
+
+      const formulaEl = $('calcLodgingFormula');
+      if (formulaEl) {
+        formulaEl.textContent =
+          `(${inova.toLocaleString('ja-JP')} + ${utatei.toLocaleString('ja-JP')}) ÷ ${people} = ` +
+          `${lodgingTotal.toLocaleString('ja-JP')} ÷ ${people} = ${lodgingPPRounded.toLocaleString('ja-JP')}円`;
+      }
+
+      const food    = num($('c_food')?.value);
+      const transit = num($('c_transit')?.value);
+      const buffer  = num($('c_buffer')?.value);
+      const total = lodgingPPRounded + food + transit + buffer;
+
+      $('calcTotalVal')?.textContent = fmt(total);
     }
 
-    const food    = num($('c_food')?.value);
-    const transit = num($('c_transit')?.value);
-    const buffer  = num($('c_buffer')?.value);
-    const total = Math.round(lodgingPP) + food + transit + buffer;
+    // Inputs exist only after DOM is built → attach listeners here.
+    ['h_inova', 'h_utatei', 'h_people', 'c_food', 'c_transit', 'c_buffer'].forEach(id => {
+      $(id)?.addEventListener('input', calc);
+    });
 
-    if($('calcTotalVal')) $('calcTotalVal').textContent = fmt(total);
+    // Image fallback: if local image missing, replace with an inline placeholder.
+    document.querySelectorAll('img[data-fallback]').forEach(img => {
+      img.addEventListener('error', () => {
+        const svg = img.getAttribute('data-fallback') || '';
+        if (!svg) return;
+        img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+      }, { once: true });
+    });
+
+    calc();
   }
 
-  ['h_inova','h_utatei','h_people','c_food','c_transit','c_buffer'].forEach(id=>{
-    const el = $(id);
-    if(el) el.addEventListener('input', calc);
-  });
-
-  // Image fallback: if local image missing, replace with an inline placeholder.
-  document.querySelectorAll('img[data-fallback]').forEach(img=>{
-    img.addEventListener('error', ()=>{
-      const svg = img.getAttribute('data-fallback') || '';
-      if(!svg) return;
-      img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
-    }, { once: true });
-  });
-
-  calc();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCostCalc);
+  } else {
+    initCostCalc();
+  }
 })();
 </script>
 <style>
