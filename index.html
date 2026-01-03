@@ -5,19 +5,57 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>HOKURIKU &amp; HIDA TRIP 2026</title>
-<script src="https://cdn.tailwindcss.com">
-
-// Cost calculator
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
 (function(){
-  const fmt = (n)=> new Intl.NumberFormat('ja-JP').format(n) + '円';
-  const inputs = Array.from(document.querySelectorAll('input[data-cost]'));
-  const out = document.getElementById('calcTotalVal');
-  if(!inputs.length || !out) return;
-  const calc = ()=>{
-    const total = inputs.reduce((s,i)=> s + (parseInt(i.value||'0',10)||0), 0);
-    out.textContent = fmt(total);
+  const fmt = (n)=> new Intl.NumberFormat('ja-JP').format(Math.round(n)) + '円';
+  const num = (v)=> {
+    const n = parseInt(String(v||'0').replace(/,/g,''),10);
+    return Number.isFinite(n) ? n : 0;
   };
-  inputs.forEach(i=> i.addEventListener('input', calc));
+  const $ = (id)=> document.getElementById(id);
+
+  function calc(){
+    const inova  = num($('h_inova')?.value);
+    const utatei = num($('h_utatei')?.value);
+    const people = Math.max(1, num($('h_people')?.value) || 1);
+
+    const lodgingTotal = inova + utatei;
+    const lodgingPP = lodgingTotal / people;
+
+    if($('h_total')) $('h_total').textContent = fmt(lodgingTotal);
+    if($('c_lodging_pp')) $('c_lodging_pp').value = String(Math.round(lodgingPP));
+    if($('c_lodging_pp_fmt')) $('c_lodging_pp_fmt').textContent = fmt(lodgingPP);
+    if($('c_lodging_pp_inline')) $('c_lodging_pp_inline').textContent = fmt(lodgingPP);
+
+    if($('calcLodgingFormula')){
+      $('calcLodgingFormula').textContent =
+        `(${inova.toLocaleString('ja-JP')} + ${utatei.toLocaleString('ja-JP')}) ÷ ${people} = ` +
+        `${lodgingTotal.toLocaleString('ja-JP')} ÷ ${people} = ${Math.round(lodgingPP).toLocaleString('ja-JP')}円`;
+    }
+
+    const food    = num($('c_food')?.value);
+    const transit = num($('c_transit')?.value);
+    const buffer  = num($('c_buffer')?.value);
+    const total = Math.round(lodgingPP) + food + transit + buffer;
+
+    if($('calcTotalVal')) $('calcTotalVal').textContent = fmt(total);
+  }
+
+  ['h_inova','h_utatei','h_people','c_food','c_transit','c_buffer'].forEach(id=>{
+    const el = $(id);
+    if(el) el.addEventListener('input', calc);
+  });
+
+  // Image fallback: if local image missing, replace with an inline placeholder.
+  document.querySelectorAll('img[data-fallback]').forEach(img=>{
+    img.addEventListener('error', ()=>{
+      const svg = img.getAttribute('data-fallback') || '';
+      if(!svg) return;
+      img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }, { once: true });
+  });
+
   calc();
 })();
 </script>
@@ -203,7 +241,24 @@
 .calcTotal{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:12px;border-radius:16px;border:1px solid rgba(37,99,235,.25);background:rgba(37,99,235,.06);}
 .calcTotalLabel{font-weight:900;}
 .calcTotalVal{font-weight:1000;font-size:18px;}
-</style>
+
+
+    /* Cost inputs */
+    .tbl input.money{
+      width: 120px;
+      max-width: 100%;
+      text-align: right;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font: inherit;
+    }
+    .tbl tfoot th{
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    </style>
 <meta content="dark" name="color-scheme"/></head>
 <body>
 <header class="topbar">
@@ -225,7 +280,14 @@
 </header>
 <main class="containerX">
 <section class="hero" id="top">
-<img alt="trip cover" crossorigin="anonymous" decoding="async" fetchpriority="high" loading="eager" referrerpolicy="no-referrer" src="https://res.cloudinary.com/jnto/image/upload/f_auto%2Cfl_lossy%2Cq_auto/v1/media_national_parks/filer_public/ee/0f/ee0f176d-a4a3-4e32-b122-7fb27b5af052/chubusangaku_tenboudai-winter_ropeway_npoj10-12_xsnumx"/>
+<img alt="trip cover" crossorigin="anonymous" decoding="async" fetchpriority="high" loading="eager" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/hero.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>">
 <div aria-hidden="true" class="heroOverlay"></div>
 <div class="heroContent">
 <div class="heroTitle">HOKURIKU &amp; HIDA TRIP 2026</div>
@@ -288,7 +350,21 @@
 <div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 4時間2分）</div>
 </div>
 </div>
-<div aria-label="day1 images" class="gallery"><a class="imgCard" href="https://source.unsplash.com/1200x800/?fukui,japan" rel="noreferrer" target="_blank"><img alt="Day1 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Eihei-ji_Temple_Chokushimon%2C_Eiheiji-cho_2013.jpg/330px-Eihei-ji_Temple_Chokushimon%2C_Eiheiji-cho_2013.jpg"/></a><a class="imgCard" href="https://source.unsplash.com/1200x800/?kanazawa,japan" rel="noreferrer" target="_blank"><img alt="Day1 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Maruoka_Castle_Keep_Tower%2C_Maruoka-cho_Sakai_2013.jpg/330px-Maruoka_Castle_Keep_Tower%2C_Maruoka-cho_Sakai_2013.jpg"/></a></div>
+<div aria-label="day1 images" class="gallery"><a class="imgCard" href="assets/images/day1_1.jpg" rel="noreferrer" target="_blank"><img alt="Day1 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day1_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day1_2.jpg" rel="noreferrer" target="_blank"><img alt="Day1 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day1_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
 <div class="evtList">
 <article class="evt" data-day="day1" data-text="07:40–09:03 大阪駅→敦賀（特急サンダーバード5号） 早得7で予約。敦賀で北陸新幹線に乗り換え。" data-type="rail">
 <div aria-hidden="true" class="evtIcon">
@@ -487,7 +563,21 @@
 </button>
 </div>
 <div class="accordionPanel" data-panel="day2" hidden="">
-<div aria-label="day2 images" class="gallery"><a class="imgCard" href="https://source.unsplash.com/1200x800/?kenrokuen,kanazawa" rel="noreferrer" target="_blank"><img alt="Day2 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://www.centrair.jp/en/special/campaign/snowtravel-japan/assets/img/kanazawa/common/spot-0.jpg"/></a><a class="imgCard" href="https://source.unsplash.com/1200x800/?kanazawa,market" rel="noreferrer" target="_blank"><img alt="Day2 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://www.centrair.jp/en/special/campaign/snowtravel-japan/assets/img/kanazawa/common/spot-2.jpg"/></a></div>
+<div aria-label="day2 images" class="gallery"><a class="imgCard" href="assets/images/day2_1.jpg" rel="noreferrer" target="_blank"><img alt="Day2 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day2_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day2_2.jpg" rel="noreferrer" target="_blank"><img alt="Day2 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day2_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
 <div class="evtList">
 <article class="evt" data-day="day2" data-text="07:30–08:30 朝食：いきいき亭（近江町市場） 海鮮丼や寿司を提供。7:00〜15:00、火曜定休。" data-type="food">
 <div aria-hidden="true" class="evtIcon">
@@ -632,7 +722,21 @@
 <div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：中（バス/鉄道の合計所要 2時間30分）</div>
 </div>
 </div>
-<div aria-label="day3 images" class="gallery"><a class="imgCard" href="https://source.unsplash.com/1200x800/?shirakawa-go" rel="noreferrer" target="_blank"><img alt="Day3 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://res.cloudinary.com/jnto/image/upload/w_750%2Ch_503%2Cf_auto%2Cfl_lossy%2Cq_auto%2Cc_fill%2Cq_auto/v1/media/filer_public/71/e3/71e3f255-e44c-46a5-a330-1c19359ae1f9/shirakawa-go-kv_wh9o1w"/></a><a class="imgCard" href="https://source.unsplash.com/1200x800/?takayama,japan" rel="noreferrer" target="_blank"><img alt="Day3 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://cdn.visitgifu.com/wp/2020/03/869e29b5-20180907takayama_sannomachi2-1290x793.jpg"/></a></div>
+<div aria-label="day3 images" class="gallery"><a class="imgCard" href="assets/images/day3_1.jpg" rel="noreferrer" target="_blank"><img alt="Day3 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day3_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day3_2.jpg" rel="noreferrer" target="_blank"><img alt="Day3 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day3_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
 <div class="evtList">
 <article class="evt" data-day="day3" data-text="07:30–08:00 朝食：加賀白山そば 金沢駅リント内のそば店。6:00〜21:00。" data-type="food">
 <div aria-hidden="true" class="evtIcon">
@@ -803,7 +907,21 @@
 <div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 7時間25分）</div>
 </div>
 </div>
-<div aria-label="day4 images" class="gallery"><a class="imgCard" href="https://source.unsplash.com/1200x800/?ropeway,japan" rel="noreferrer" target="_blank"><img alt="Day4 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://res.cloudinary.com/jnto/image/upload/f_auto%2Cfl_lossy%2Cq_auto/v1/media_national_parks/filer_public/ee/0f/ee0f176d-a4a3-4e32-b122-7fb27b5af052/chubusangaku_tenboudai-winter_ropeway_npoj10-12_xsnumx"/></a><a class="imgCard" href="https://source.unsplash.com/1200x800/?onsen,japan" rel="noreferrer" target="_blank"><img alt="Day4 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://res.cloudinary.com/jnto/image/upload/w_800%2Cf_auto%2Cfl_lossy%2Cq_auto/v1/media/filer_public/c4/2a/c42a3ad7-02ac-440e-861e-990484f3ec0e/jimu0067_003_s5ow2j"/></a></div>
+<div aria-label="day4 images" class="gallery"><a class="imgCard" href="assets/images/day4_1.jpg" rel="noreferrer" target="_blank"><img alt="Day4 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day4_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day4_2.jpg" rel="noreferrer" target="_blank"><img alt="Day4 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day4_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
 <div class="evtList">
 <article class="evt" data-day="day4" data-text="07:30–08:10 朝食：utateiで自炊 キッチンと食器を活用。朝市やスーパーで仕入れた食材で調理。" data-type="food">
 <div aria-hidden="true" class="evtIcon">
@@ -948,7 +1066,21 @@
 <div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 8時間38分）</div>
 </div>
 </div>
-<div aria-label="day5 images" class="gallery"><a class="imgCard" href="https://source.unsplash.com/1200x800/?hida,furukawa" rel="noreferrer" target="_blank"><img alt="Day5 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://www.hida-kankou.jp/storage/post_picture/20250220165058_EQEmYkXvbgyQDcoSlgAvjf2sh2b2XakJrrHWiRXL.jpg"/></a><a class="imgCard" href="https://source.unsplash.com/1200x800/?nagoya,japan" rel="noreferrer" target="_blank"><img alt="Day5 image" crossorigin="anonymous" decoding="async" loading="lazy" referrerpolicy="no-referrer" src="https://res.cloudinary.com/jnto/image/upload/w_800%2Cf_auto%2Cfl_lossy%2Cq_auto/v1/media/filer_public/11/11/1111721c-ce88-42fa-9485-28bcd267f2db/jimu0067_002_xegysm"/></a></div>
+<div aria-label="day5 images" class="gallery"><a class="imgCard" href="assets/images/day5_1.jpg" rel="noreferrer" target="_blank"><img alt="Day5 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day5_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day5_2.jpg" rel="noreferrer" target="_blank"><img alt="Day5 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day5_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
 <div class="evtList">
 <article class="evt" data-day="day5" data-text="07:30–08:10 朝食：かじ橋食堂 高山駅そば。6:00〜15:00。" data-type="food">
 <div aria-hidden="true" class="evtIcon">
@@ -1083,7 +1215,103 @@
 </div>
 </div>
 </section>
-<section class="section" id="cost"><h2 class="sectionTitle">費用</h2><p class="sectionDesc">1人あたり概算（4泊・一部シェア前提）。内訳表示＋入力で再計算できます。</p><div class="grid2"><div class="card"><h3>基本費用（計算結果）</h3><table class="tbl"><thead><tr><th>項目</th><th>金額</th><th>メモ</th></tr></thead><tbody><tr><td>宿泊</td><td>17,197円</td><td>4泊・シェア</td></tr><tr><td>食費</td><td>30,000円</td><td>6,000円/日 ×5日</td></tr><tr><td>交通＋入場</td><td>36,930円</td><td>特急・バス・パス・入場料</td></tr><tr><td>合計</td><td style="font-weight:900;">84,127円</td><td>（概算）</td></tr></tbody></table><p class="muted" style="margin-top:10px;font-size:12px;">※前提が変わると増減します（宿の単価・人数、食の単価、入場/温泉の回数など）。</p><div class="calc"><div class="calcGrid"><label class="calcItem"><span class="calcLabel">宿泊</span><input data-cost="stay" min="0" step="1" type="number" value="17197"/><span class="calcHint">4泊・シェア</span></label><label class="calcItem"><span class="calcLabel">食費</span><input data-cost="food" min="0" step="1" type="number" value="30000"/><span class="calcHint">6,000円/日 ×5日</span></label><label class="calcItem"><span class="calcLabel">交通＋入場</span><input data-cost="move" min="0" step="1" type="number" value="36930"/><span class="calcHint">特急・バス・パス等</span></label></div><div class="calcTotal"><div class="calcTotalLabel">合計</div><div class="calcTotalVal" id="calcTotalVal"></div></div></div></div><div class="card"><h3>節約ポイント</h3><ul><li>早得7で往路の特急＋新幹線をセット割引</li><li>京福バス2日フリーきっぷで福井周遊が1,100円お得</li><li>tabiwaパスで金沢市内バス＋5施設入場が1,770円以上お得</li><li>新穂高Web限定セットでランチと温泉付き</li><li>高速バスのWeb割で高山→名古屋が300円割引</li></ul></div></div></section>
+
+<section class="section" id="cost">
+  <h2 class="sectionTitle">費用</h2>
+  <p class="sectionDesc">
+    1人あたり概算。宿泊は「合計 ÷ 人数」で自動計算。入力を変えると合計が即時更新されます。
+  </p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>宿泊（合計 → 1人あたり）</h3>
+      <table aria-label="lodging table" class="tbl">
+        <thead>
+          <tr><th>内訳</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>INOVA Kanazawa</td>
+            <td style="text-align:right;"><input class="money" id="h_inova" inputmode="numeric" min="0" step="1" type="number" value="35370"/></td>
+            <td>2/24〜2/26（金沢）</td>
+          </tr>
+          <tr>
+            <td>Utatei</td>
+            <td style="text-align:right;"><input class="money" id="h_utatei" inputmode="numeric" min="0" step="1" type="number" value="37422"/></td>
+            <td>2/26〜2/28（高山）</td>
+          </tr>
+          <tr>
+            <td><b>宿泊合計</b></td>
+            <td style="text-align:right;"><b id="h_total">–</b></td>
+            <td>（上2つの合計）</td>
+          </tr>
+          <tr>
+            <td>人数</td>
+            <td style="text-align:right;"><input class="money" id="h_people" inputmode="numeric" min="1" step="1" type="number" value="4"/></td>
+            <td>割り勘人数</td>
+          </tr>
+          <tr>
+            <td><b>1人あたり宿泊</b></td>
+            <td style="text-align:right;">
+              <input class="money" id="c_lodging_pp" inputmode="numeric" min="0" step="1" type="number" value="18198" readonly/>
+            </td>
+            <td>表示用：<b id="c_lodging_pp_fmt">–</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <div class="muted">計算式</div>
+        <div id="calcLodgingFormula" class="mono"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>全体概算（1人あたり）</h3>
+      <table aria-label="budget table" class="tbl">
+        <thead>
+          <tr><th>項目</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>宿泊</td>
+            <td style="text-align:right;"><span class="mono" id="c_lodging_pp_inline">–</span></td>
+            <td>上の「1人あたり宿泊」を反映</td>
+          </tr>
+          <tr>
+            <td>食費</td>
+            <td style="text-align:right;"><input class="money" id="c_food" inputmode="numeric" min="0" step="1" type="number" value="30000"/></td>
+            <td>6,000円/日 × 5日（目安）</td>
+          </tr>
+          <tr>
+            <td>交通＋入場</td>
+            <td style="text-align:right;"><input class="money" id="c_transit" inputmode="numeric" min="0" step="1" type="number" value="36930"/></td>
+            <td>特急・バス・パス・入場料（目安）</td>
+          </tr>
+          <tr>
+            <td>予備</td>
+            <td style="text-align:right;"><input class="money" id="c_buffer" inputmode="numeric" min="0" step="1" type="number" value="0"/></td>
+            <td>お土産/追加移動など</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><th>合計</th><th style="text-align:right;"><span id="calcTotalVal">–</span></th><th class="muted">（宿泊＋食費＋交通＋予備）</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3>節約ポイント</h3>
+    <ul class="list">
+      <li>早得7で往路の特急＋新幹線をセット割引</li>
+      <li>京福バス2日フリーきっぷで福井周遊が1,100円お得</li>
+      <li>tabiwaパスで金沢市内バス＋5施設入場が1,770円以上お得</li>
+      <li>新穂高Web限定セットでランチと温泉付き</li>
+      <li>高速バスのWeb割で高山→名古屋が300円割引</li>
+    </ul>
+  </div>
+</section>
+
 <section class="section" id="todo">
 <h2 class="sectionTitle">ToDo</h2>
 <div class="card"><ul class="list"><li>JR早得7きっぷ（サンダーバード＋北陸新幹線）をe5489で7日前までに予約し、4名分を発券</li><li>京福バス2日フリーきっぷを福井駅で購入</li><li>金沢tabiwaパスを事前にアプリで購入し各自のスマホに保存</li><li>金沢→白川郷→高山、高山→名古屋の高速バスを公式サイトで座席指定予約</li><li>新穂高ロープウェイWEB限定セット（バス＋ロープウェイ＋ランチ）を3日前までに予約</li><li>飛騨の宿泊先UTATEIのキッチン用に最低限の調味料・食材を調達（宮川朝市やスーパー）</li><li>名古屋のひつまぶし店は予約不可の場合が多いので早めに並ぶ</li><li>防寒具・滑りにくい靴・常備薬を準備し、天候による変更に備える</li></ul></div>
@@ -1175,6 +1403,31 @@
       });
     }, { rootMargin: '-50% 0px -45% 0px', threshold: 0.01 });
     sections.forEach(s => spy.observe(s));
-  </script>
+  
+
+// Cost calculator
+(function(){
+  const ids = ["c_lodging","c_food","c_trans","c_misc"];
+  const elTotal = document.getElementById("c_total");
+  function yen(n){
+    try { return Number(n).toLocaleString("ja-JP") + "円"; } catch(e){ return n + "円"; }
+  }
+  function calc(){
+    let sum = 0;
+    for(const id of ids){
+      const el = document.getElementById(id);
+      if(!el) continue;
+      const v = Number(el.value || 0);
+      sum += isFinite(v) ? v : 0;
+    }
+    if(elTotal) elTotal.textContent = yen(sum);
+  }
+  for(const id of ids){
+    const el = document.getElementById(id);
+    if(el) el.addEventListener("input", calc);
+  }
+  calc();
+})();
+</script>
 </body>
 </html>
