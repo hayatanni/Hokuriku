@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>HOKURIKU &amp; HIDA TRIP 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+(function(){
+  const fmt = (n)=> new Intl.NumberFormat('ja-JP').format(Math.round(n)) + '円';
+  const num = (v)=> {
+    const n = parseInt(String(v||'0').replace(/,/g,''),10);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const $ = (id)=> document.getElementById(id);
+
+  function calc(){
+    const inova  = num($('h_inova')?.value);
+    const utatei = num($('h_utatei')?.value);
+    const people = Math.max(1, num($('h_people')?.value) || 1);
+
+    const lodgingTotal = inova + utatei;
+    const lodgingPP = lodgingTotal / people;
+
+    if($('h_total')) $('h_total').textContent = fmt(lodgingTotal);
+    if($('c_lodging_pp')) $('c_lodging_pp').value = String(Math.round(lodgingPP));
+    if($('c_lodging_pp_fmt')) $('c_lodging_pp_fmt').textContent = fmt(lodgingPP);
+    if($('c_lodging_pp_inline')) $('c_lodging_pp_inline').textContent = fmt(lodgingPP);
+
+    if($('calcLodgingFormula')){
+      $('calcLodgingFormula').textContent =
+        `(${inova.toLocaleString('ja-JP')} + ${utatei.toLocaleString('ja-JP')}) ÷ ${people} = ` +
+        `${lodgingTotal.toLocaleString('ja-JP')} ÷ ${people} = ${Math.round(lodgingPP).toLocaleString('ja-JP')}円`;
+    }
+
+    const food    = num($('c_food')?.value);
+    const transit = num($('c_transit')?.value);
+    const buffer  = num($('c_buffer')?.value);
+    const total = Math.round(lodgingPP) + food + transit + buffer;
+
+    if($('calcTotalVal')) $('calcTotalVal').textContent = fmt(total);
+  }
+
+  ['h_inova','h_utatei','h_people','c_food','c_transit','c_buffer'].forEach(id=>{
+    const el = $(id);
+    if(el) el.addEventListener('input', calc);
+  });
+
+  // Image fallback: if local image missing, replace with an inline placeholder.
+  document.querySelectorAll('img[data-fallback]').forEach(img=>{
+    img.addEventListener('error', ()=>{
+      const svg = img.getAttribute('data-fallback') || '';
+      if(!svg) return;
+      img.src = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+    }, { once: true });
+  });
+
+  calc();
+})();
+</script>
+<style>
+    :root {
+      --bg: #ffffff;
+      --text: #0b1220;
+      --muted: rgba(11,18,32,.70);
+      --line: rgba(11,18,32,.10);
+      --shadow: 0 10px 30px rgba(11,18,32,.08);
+      --accent: #2563eb;
+      --accent2: #7c3aed;
+    }
+    html, body { background: var(--bg); color: var(--text); }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", "Segoe UI", sans-serif; }
+    .containerX { max-width: 980px; margin: 0 auto; padding: 18px 16px 64px; }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.86);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbarInner { max-width: 980px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+    .brand { display:flex; align-items:center; gap:10px; min-width: 0; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+    .brandText { min-width:0; }
+    .brandTitle { font-weight: 800; letter-spacing: .2px; line-height: 1.15; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brandSub { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .actions { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    .iconBtn {
+      width: 38px; height: 38px; border-radius: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow: 0 6px 18px rgba(11,18,32,.06);
+    }
+    .iconBtn:active { transform: translateY(1px); }
+    .navPills {
+      display:flex; gap:8px; overflow:auto; padding: 8px 16px 12px; border-top: 1px solid var(--line);
+      -webkit-overflow-scrolling: touch;
+    }
+    .navPills a {
+      flex: 0 0 auto;
+      padding: 7px 12px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: white;
+      color: rgba(11,18,32,.85);
+      font-size: 13px;
+    }
+    .navPills a.active { border-color: rgba(37,99,235,.35); background: rgba(37,99,235,.08); color: #1d4ed8; }
+    .hero {
+      margin-top: 16px; border-radius: 24px; overflow:hidden;
+      border: 1px solid var(--line); box-shadow: var(--shadow);
+      background: #0b1220; position: relative;
+    }
+    .hero img { width: 100%; height: 240px; object-fit: cover; opacity: .78; }
+    .heroOverlay { position:absolute; inset:0; background: linear-gradient(180deg, rgba(11,18,32,.10), rgba(11,18,32,.66)); }
+    .heroContent { position:absolute; inset:0; display:flex; flex-direction: column; justify-content: flex-end; padding: 18px 18px 16px; color: white; }
+    .heroTitle { font-size: 28px; font-weight: 900; letter-spacing: .2px; line-height: 1.15; }
+    .heroMeta { margin-top: 6px; color: rgba(255,255,255,.82); font-size: 14px; }
+    .tools { margin-top: 14px; display:flex; gap:10px; flex-wrap: wrap; }
+    .searchWrap {
+      display:flex; gap:10px; align-items:center;
+      border: 1px solid var(--line); background: white;
+      padding: 10px 12px; border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(11,18,32,.06);
+      flex: 1 1 240px; min-width: 0;
+    }
+    .searchWrap input { width: 100%; outline:none; background: transparent; font-size: 14px; }
+    .chipRow { display:flex; gap:8px; flex-wrap: wrap; color: rgba(11,18,32,.85); }
+    .chip {
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(11,18,32,.02);
+      font-size: 12px; cursor: pointer; user-select: none;
+    }
+    .chip.active { border-color: rgba(37,99,235,.35); background: rgba(37,99,235,.08); color: #1d4ed8; font-weight: 700; }
+    .section { margin-top: 18px; }
+    .sectionHead { border-radius: 20px; border: 1px solid var(--line); background: white; box-shadow: 0 10px 24px rgba(11,18,32,.06); overflow: hidden; }
+    .accordionBtn { width:100%; text-align:left; padding: 14px 14px 12px; display:flex; gap:12px; align-items:flex-start; }
+    .accLeft { min-width: 0; flex: 1; }
+    .kicker { color: rgba(11,18,32,.55); font-size: 12px; font-weight: 700; letter-spacing: .25px; }
+    .dayTitle { margin-top: 2px; font-size: 18px; font-weight: 900; line-height: 1.25; }
+    .dayMeta { margin-top: 6px; font-size: 13px; color: var(--muted); }
+    .accRight { flex: 0 0 auto; }
+    .chev {
+      width: 34px; height: 34px; display:flex; align-items:center; justify-content:center;
+      border-radius: 14px; border: 1px solid var(--line);
+      background: rgba(11,18,32,.02); color: rgba(11,18,32,.75);
+      font-size: 16px; transition: transform .2s ease;
+    }
+    .accordionBtn[aria-expanded="true"] .chev { transform: rotate(180deg); }
+    .accordionPanel { padding: 12px 12px 14px; border-top: 1px solid var(--line); background: rgba(11,18,32,.01); }
+
+    .quickGrid {
+      display:grid; gap:10px; grid-template-columns: 1fr;
+      margin: 2px 0 12px;
+    }
+    .quickCard {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 18px;
+      padding: 12px;
+      box-shadow: 0 10px 22px rgba(11,18,32,.05);
+    }
+    .quickTitle { font-weight: 900; font-size: 14px; }
+    .quickList { margin-top: 8px; display:flex; flex-direction: column; gap: 8px; }
+    .quickList li { display:flex; justify-content: space-between; gap: 10px; font-size: 13px; color: rgba(11,18,32,.82); }
+    .mono { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; }
+    .badges { margin-top: 10px; display:flex; gap:8px; flex-wrap: wrap; }
+    .badge { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.02); font-size: 12px; color: rgba(11,18,32,.80); }
+    .badge-accent { border-color: rgba(37,99,235,.30); background: rgba(37,99,235,.08); color: #1d4ed8; font-weight: 700; }
+
+    .gallery { display:flex; gap:10px; overflow:auto; padding: 2px 2px 10px; -webkit-overflow-scrolling: touch; }
+    .imgCard {
+      flex: 0 0 auto; width: 220px; height: 140px;
+      border-radius: 18px; overflow: hidden; border: 1px solid var(--line);
+      background: #f2f4f8; box-shadow: 0 10px 24px rgba(11,18,32,.06);
+    }
+    .imgCard img { width: 100%; height: 100%; object-fit: cover; }
+
+    .evtList { display:flex; flex-direction: column; gap: 10px; }
+    .evt {
+      display:flex; gap: 12px; padding: 12px;
+      border-radius: 18px; border: 1px solid var(--line);
+      background: white; box-shadow: 0 10px 22px rgba(11,18,32,.05);
+    }
+    .evtIcon {
+      width: 42px; height: 42px; border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(37,99,235,.06);
+      display:flex; align-items:center; justify-content:center;
+      flex: 0 0 auto;
+    }
+    .evtTop { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    .evtTime { font-weight: 900; font-size: 13px; }
+    .pill { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: rgba(11,18,32,.78); background: rgba(11,18,32,.02); }
+    .evtTitle { margin-top: 6px; font-weight: 900; font-size: 15px; line-height: 1.25; }
+    .evtMemo { margin-top: 6px; color: rgba(11,18,32,.72); font-size: 13px; line-height: 1.55; }
+
+    .card { border-radius: 20px; border: 1px solid var(--line); background: white; box-shadow: 0 10px 24px rgba(11,18,32,.06); padding: 14px; margin-top: 14px; }
+    .card h3 { font-weight: 900; font-size: 16px; margin-bottom: 10px; }
+    .list { padding-left: 18px; display:flex; flex-direction: column; gap: 8px; }
+    .list li { color: rgba(11,18,32,.80); line-height: 1.55; font-size: 14px; }
+    .muted { color: var(--muted); }
+    .sectionTitle { margin-top: 18px; font-size: 18px; font-weight: 900; }
+    .overviewGrid { display:grid; gap: 12px; margin-top: 12px; grid-template-columns: 1fr; }
+
+    @media (min-width: 780px) {
+      .hero img { height: 300px; }
+      .overviewGrid { grid-template-columns: 1fr 1fr; }
+      .quickGrid { grid-template-columns: 1fr 1fr; }
+      .imgCard { width: 260px; height: 160px; }
+    }
+    @media print {
+      .topbar, .hero, .tools, .navPills { display:none !important; }
+      .accordionPanel[hidden] { display:block !important; }
+      .accordionPanel { background: white; }
+      .evt { box-shadow:none; }
+      .sectionHead, .card, .quickCard { box-shadow:none; }
+    }
+  
+/* v4 fixes */
+.topbar{position:sticky;top:0;z-index:80;backdrop-filter:saturate(1.3) blur(10px);}
+@supports (top: env(safe-area-inset-top)){
+  .topbar{top: env(safe-area-inset-top);}
+}
+
+.tbl{width:100%;border-collapse:collapse;margin-top:10px;}
+.tbl th,.tbl td{border-bottom:1px solid var(--line);padding:10px 8px;vertical-align:top;}
+.tbl th{font-size:12px;color:var(--muted);text-align:left;font-weight:800;letter-spacing:.2px;}
+.calc{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+.calcGrid{display:grid;grid-template-columns:1fr;gap:10px;}
+.calcItem{display:grid;grid-template-columns:1fr;gap:6px;}
+.calcLabel{font-weight:900;}
+.calcItem input{width:100%;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(11,18,32,.02);font-size:14px;outline:none;}
+.calcHint{font-size:12px;color:var(--muted);}
+.calcTotal{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:12px;border-radius:16px;border:1px solid rgba(37,99,235,.25);background:rgba(37,99,235,.06);}
+.calcTotalLabel{font-weight:900;}
+.calcTotalVal{font-weight:1000;font-size:18px;}
+
+
+    /* Cost inputs */
+    .tbl input.money{
+      width: 120px;
+      max-width: 100%;
+      text-align: right;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font: inherit;
+    }
+    .tbl tfoot th{
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    </style>
+<meta content="light" name="color-scheme"/></head>
+<body>
+<header class="topbar">
+<div class="topbarInner">
+<div class="brand">
+<div aria-hidden="true" class="logo"></div>
+<div class="brandText">
+<div class="brandTitle">HOKURIKU &amp; HIDA TRIP 2026</div>
+<div class="brandSub">2026.2.24 (Tue) – 2.28 (Sat)</div>
+</div>
+</div>
+<div class="actions">
+<button aria-label="印刷" class="iconBtn" id="printBtn" title="印刷">🖨️</button>
+</div>
+</div>
+<nav aria-label="ページ内ナビ" class="navPills">
+<a data-nav="top" href="#top">Top</a><a data-nav="overview" href="#overview">概要</a><a data-nav="day1" href="#day1">Day1</a><a data-nav="day2" href="#day2">Day2</a><a data-nav="day3" href="#day3">Day3</a><a data-nav="day4" href="#day4">Day4</a><a data-nav="day5" href="#day5">Day5</a><a data-nav="cost" href="#cost">費用</a><a data-nav="todo" href="#todo">ToDo</a>
+</nav>
+</header>
+<main class="containerX">
+<section class="hero" id="top">
+<img alt="trip cover" crossorigin="anonymous" decoding="async" fetchpriority="high" loading="eager" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/hero.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>">
+<div aria-hidden="true" class="heroOverlay"></div>
+<div class="heroContent">
+<div class="heroTitle">HOKURIKU &amp; HIDA TRIP 2026</div>
+<div class="heroMeta">折りたたみ / 検索 / 主要移動と目玉のハイライト（白背景固定）</div>
+</div>
+</section>
+<section class="section" id="overview">
+<h2 class="sectionTitle">概要</h2>
+<div class="overviewGrid">
+<div class="card">
+<h3>使い方</h3>
+<ul class="list">
+<li>Dayの見出しをタップすると、その日の旅程が展開/折りたたみできます</li>
+<li>検索で「場所/店名/キーワード」を横断フィルタできます</li>
+<li>チップで「バス/鉄道/観光/グルメ…」に絞り込みできます</li>
+</ul>
+</div>
+<div class="card">
+<h3>フィルタ</h3>
+<div class="tools" style="margin-top: 0;">
+<div class="searchWrap" role="search">
+              🔎 <input id="q" inputmode="search" placeholder="例：白川郷 / ロープウェイ / ひつまぶし …" type="search"/>
+<span class="muted" id="hit" style="white-space:nowrap;">—</span>
+</div>
+<div class="chipRow" id="chips">
+<span class="chip" data-type="all">すべて</span>
+<span class="chip" data-type="bus">バス</span>
+<span class="chip" data-type="rail">鉄道</span>
+<span class="chip" data-type="sight">観光</span>
+<span class="chip" data-type="walk">散策</span>
+<span class="chip" data-type="food">グルメ</span>
+<span class="chip" data-type="spa">温泉</span>
+<span class="chip" data-type="stay">宿</span>
+<span class="chip" data-type="break">休憩</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="section" id="day1">
+<div class="sectionHead">
+<button aria-expanded="false" class="accordionBtn" data-accordion="day1">
+<div class="accLeft">
+<div class="kicker">Day1</div>
+<h2 class="dayTitle">Day1 : 大阪 → 福井 → 東尋坊 → 金沢</h2>
+<div class="dayMeta">14件 / 07:40–20:30（12時間50分） / 移動: 4時間2分（多）</div>
+</div>
+<div aria-hidden="true" class="accRight"><span class="chev">▾</span></div>
+</button>
+</div>
+<div class="accordionPanel" data-panel="day1" hidden="">
+<div class="quickGrid">
+<div class="quickCard">
+<div class="quickTitle">主要移動（所要）</div>
+<ul class="quickList"><li><span class="mono">大阪駅→敦賀</span><span class="muted">所要 1時間23分</span></li><li><span class="mono">丸岡→芦原温泉→東尋坊</span><span class="muted">所要 55分</span></li><li><span class="mono">永平寺→丸岡城</span><span class="muted">所要 30分</span></li></ul>
+</div>
+<div class="quickCard">
+<div class="quickTitle">その日の目玉</div>
+<div class="badges" style="margin-top:8px;"><span class="badge badge-accent">東尋坊</span><span class="badge badge-accent">永平寺</span></div>
+<div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 4時間2分）</div>
+</div>
+</div>
+<div aria-label="day1 images" class="gallery"><a class="imgCard" href="assets/images/day1_1.jpg" rel="noreferrer" target="_blank"><img alt="Day1 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day1_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day1_2.jpg" rel="noreferrer" target="_blank"><img alt="Day1 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day1_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
+<div class="evtList">
+<article class="evt" data-day="day1" data-text="07:40–09:03 大阪駅→敦賀（特急サンダーバード5号） 早得7で予約。敦賀で北陸新幹線に乗り換え。" data-type="rail">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a4 4 0 0 1 4 4v9a3 3 0 0 1-3 3l2 2v1h-2.5l-2-2h-7l-2 2H4v-1l2-2a3 3 0 0 1-3-3V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v3h14V7a2 2 0 0 0-2-2H7Zm-2 7v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4H5Zm3.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">07:40–09:03</div>
+<span class="pill">鉄道</span>
+</div>
+<div class="evtTitle">大阪駅→敦賀（特急サンダーバード5号）</div>
+<div class="evtMemo">早得7で予約。敦賀で北陸新幹線に乗り換え</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="09:11–09:27 敦賀→福井（北陸新幹線つるぎ6号） 乗換8分。福井着は09:27。" data-type="rail">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a4 4 0 0 1 4 4v9a3 3 0 0 1-3 3l2 2v1h-2.5l-2-2h-7l-2 2H4v-1l2-2a3 3 0 0 1-3-3V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v3h14V7a2 2 0 0 0-2-2H7Zm-2 7v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4H5Zm3.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">09:11–09:27</div>
+<span class="pill">鉄道</span>
+</div>
+<div class="evtTitle">敦賀→福井（北陸新幹線つるぎ6号）</div>
+<div class="evtMemo">乗換8分。福井着は09:27</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="09:27–09:50 朝食休憩・福井駅 駅構内やコンビニで軽く食べる。永平寺ライナー乗場へ。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">09:27–09:50</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">朝食休憩・福井駅</div>
+<div class="evtMemo">駅構内やコンビニで軽く食べる。永平寺ライナー乗場へ</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="09:50–10:18 福井駅→永平寺（永平寺ライナー） 特急バスで約28分。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">09:50–10:18</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">福井駅→永平寺（永平寺ライナー）</div>
+<div class="evtMemo">特急バスで約28分</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="10:18–11:30 永平寺参拝 曹洞宗大本山。参拝料700円。" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">10:18–11:30</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">永平寺参拝</div>
+<div class="evtMemo">曹洞宗大本山。参拝料700円</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="11:30–12:15 昼食：永平寺そば一休 門前のそば店で手打ちそば。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">11:30–12:15</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">昼食：永平寺そば一休</div>
+<div class="evtMemo">門前のそば店で手打ちそば</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="12:15–13:54 永平寺→丸岡城（バス） 芦原丸岡永平寺線を利用。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:15–12:54</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">永平寺→丸岡城（バス）</div>
+<div class="evtMemo">芦原丸岡永平寺線を利用。1本後は13:15–13:54</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="12:54–13:53 丸岡城 現存天守を見学（入場450円）。" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:54–13:53</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">丸岡城</div>
+<div class="evtMemo">現存天守を見学（入場450円）</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="13:53–15:17 丸岡→芦原温泉→東尋坊（バス） 芦原温泉駅で乗換。13:53発のバスで東尋坊へ。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">13:53–15:17</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">丸岡→芦原温泉→東尋坊（バス）</div>
+<div class="evtMemo">芦原温泉駅で乗換。13:53発のバスで東尋坊へ</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="15:17–16:10 東尋坊散策 断崖絶壁を散策し、海の景観を満喫。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">15:17–16:24</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">東尋坊散策</div>
+<div class="evtMemo">断崖絶壁を散策し、海の景観を満喫</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="16:24–17:08 東尋坊→芦原温泉駅（バス） 16:24発のバスで戻る。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">16:24–17:08</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">東尋坊→芦原温泉駅（バス）</div>
+<div class="evtMemo">16:24発のバスで戻る</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="17:33–18:40 芦原温泉→金沢（ハピライン＋ir） 三セク鉄道で金沢へ、約1時間。" data-type="spa">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10v2H7V3Zm-3 6h16v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V9Zm2 2v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8H6Zm4 2h4v2h-4v-2Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">17:33–18:38</div>
+<span class="pill">温泉</span>
+</div>
+<div class="evtTitle">芦原温泉→金沢（ハピライン＋IR）</div>
+<div class="evtMemo">三セク鉄道で金沢へ、約1時間</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="18:40–19:00 チェックイン inova kanazawa ファミリースイート。" data-type="stay">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 10a3 3 0 1 1 6 0v1h7a2 2 0 0 1 2 2v8h-2v-2H4v2H2v-8a2 2 0 0 1 2-2h3v-1Zm0 3H4v4h16v-4H13v1h-2v-1H7Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">18:40–19:00</div>
+<span class="pill">宿</span>
+</div>
+<div class="evtTitle">チェックイン</div>
+<div class="evtMemo">INOVA KANAZAWA ファミリースイート</div>
+</div>
+</article>
+<article class="evt" data-day="day1" data-text="19:00–20:30 夕食：もりもり寿し金沢駅前店 金沢駅フォーラス6fで回転寿司。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">19:00–20:30</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">夕食：もりもり寿し金沢駅前店</div>
+<div class="evtMemo">金沢駅フォーラス6Fで回転寿司。チェックイン前に予約しておく</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" id="day2">
+<div class="sectionHead">
+<button aria-expanded="false" class="accordionBtn" data-accordion="day2">
+<div class="accLeft">
+<div class="kicker">Day2</div>
+<h2 class="dayTitle">Day2 : 金沢市内観光</h2>
+<div class="dayMeta">9件 / 07:30–19:00（11時間30分） / 移動: —（少）</div>
+</div>
+<div aria-hidden="true" class="accRight"><span class="chev">▾</span></div>
+</button>
+</div>
+<div class="accordionPanel" data-panel="day2" hidden="">
+<div aria-label="day2 images" class="gallery"><a class="imgCard" href="assets/images/day2_1.jpg" rel="noreferrer" target="_blank"><img alt="Day2 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day2_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day2_2.jpg" rel="noreferrer" target="_blank"><img alt="Day2 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day2_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
+<div class="evtList">
+<article class="evt" data-day="day2" data-text="07:30–08:30 朝食：いきいき亭（近江町市場） 海鮮丼や寿司を提供。7:00〜15:00、火曜定休。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">07:30–08:30</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">朝食：いきいき亭（近江町市場）</div>
+<div class="evtMemo">海鮮丼や寿司を提供。7:00〜15:00</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="08:40–09:10 尾山神社 ステンドグラスの神門を見学。" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">08:40–09:10</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">尾山神社</div>
+<div class="evtMemo">ステンドグラスの神門を見学</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="09:20–10:20 金沢城公園 石垣や長屋を散策。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">09:20–10:20</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">金沢城公園</div>
+<div class="evtMemo">石垣や長屋を散策</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="10:30–12:00 兼六園・成巽閣 tabiwaパスで入園無料。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2Zm1 5h-2v6h2V7Zm0 8h-2v2h2v-2Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">10:30–12:00</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">兼六園・成巽閣</div>
+<div class="evtMemo">tabiwaパスで入園無料</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="12:10–13:20 昼食：宇宙軒食堂 or ターバンカレー いずれも地元で親しまれる庶民派食堂。宇宙軒食堂は11:00〜15:00／17:00〜21:00、ターバンカレーは平日11:00〜19:00・土日祝11:00〜16:00。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:10–13:20</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">昼食：宇宙軒食堂 or ターバンカレー</div>
+<div class="evtMemo">いずれも地元で親しまれる庶民派飲食店。宇宙軒食堂は11:00〜15:00／17:00〜21:00、ターバンカレーは平日11:00〜19:00</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="13:30–14:30 長町武家屋敷跡（野村家） tabiwaパス対象施設。歴史ある武家屋敷。庭園と書院。" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2Zm1 5h-2v6h2V7Zm0 8h-2v2h2v-2Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">13:30–14:30</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">長町武家屋敷跡（野村家）</div>
+<div class="evtMemo">歴史ある武家屋敷。庭園と書院</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="14:40–15:20 ひがし茶屋街散策 町家と茶屋文化を体験" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">14:40–15:20</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">ひがし茶屋街散策</div>
+<div class="evtMemo">町家と茶屋文化を体験</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="15:30–17:30 金沢21世紀美術館 " data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 10a3 3 0 1 1 6 0v1h7a2 2 0 0 1 2 2v8h-2v-2H4v2H2v-8a2 2 0 0 1 2-2h3v-1Zm0 3H4v4h16v-4H13v1h-2v-1H7Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">15:30–17:30</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">金沢21世紀美術館</div>
+<div class="evtMemo">現代アートを楽しむ</div>
+</div>
+</article>
+<article class="evt" data-day="day2" data-text="17:30–19:00 夕食：居酒屋いたる 地酒と旬の海鮮。17:30〜23:00、日曜休。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">17:30–19:30</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">夕食：居酒屋いたる</div>
+<div class="evtMemo">地酒と旬の海鮮。17:30〜23:00</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" id="day3">
+<div class="sectionHead">
+<button aria-expanded="false" class="accordionBtn" data-accordion="day3">
+<div class="accLeft">
+<div class="kicker">Day3</div>
+<h2 class="dayTitle">Day3 : 金沢 → 白川郷 → 高山</h2>
+<div class="dayMeta">11件 / 07:30–21:00（13時間30分） / 移動: 2時間30分（中）</div>
+</div>
+<div aria-hidden="true" class="accRight"><span class="chev">▾</span></div>
+</button>
+</div>
+<div class="accordionPanel" data-panel="day3" hidden="">
+<div class="quickGrid">
+<div class="quickCard">
+<div class="quickTitle">主要移動（所要）</div>
+<ul class="quickList"><li><span class="mono">高山バスセンター着→UTATEIチェックイン</span><span class="muted">所要 25分</span></li></ul>
+</div>
+<div class="quickCard">
+<div class="quickTitle">その日の目玉</div>
+<div class="badges" style="margin-top:8px;"><span class="badge badge-accent">白川郷</span><span class="badge badge-accent">合掌造り</span><span class="badge badge-accent">高山</span><span class="badge badge-accent">古い町並</span></div>
+<div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：中（バス/鉄道の合計所要 2時間30分）</div>
+</div>
+</div>
+<div aria-label="day3 images" class="gallery"><a class="imgCard" href="assets/images/day3_1.jpg" rel="noreferrer" target="_blank"><img alt="Day3 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day3_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day3_2.jpg" rel="noreferrer" target="_blank"><img alt="Day3 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day3_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
+<div class="evtList">
+<article class="evt" data-day="day3" data-text="07:30–08:00 朝食：加賀白山そば 金沢駅リント内のそば店。6:00〜21:00。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">07:30–08:10</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">朝食：加賀白山そば</div>
+<div class="evtMemo">金沢駅リント内のそば店。6:00〜21:00。食べずにバスに乗るかも。</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="08:10–09:25 高速バス（金沢→白川郷） 要予約。約75分。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">08:10–09:25</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">高速バス（金沢→白川郷）</div>
+<div class="evtMemo">要予約。約75分</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="09:25–10:00 白川郷散策 合掌造り集落を散策。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">09:25–10:00</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">白川郷散策</div>
+<div class="evtMemo">合掌造り集落を散策</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="10:00–11:00 昼食：お食事処いろり 10:00〜14:00営業。朴葉味噌など郷土料理。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">10:00–11:00</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">昼食：お食事処いろり</div>
+<div class="evtMemo">10:00〜14:00営業。朴葉味噌など郷土料理。パスして高山に向かうのもあり</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="11:00–12:35 白川郷自由散策 土産物や展望台など。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">11:00–12:35</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">白川郷自由散策</div>
+<div class="evtMemo">土産物や展望台など。満足したら11：40のバスに乗る</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="13:15–14:05 高速バス（白川郷→高山） 座席予約必須。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:35–13:25</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">高速バス（白川郷→高山）</div>
+<div class="evtMemo">座席予約必須</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="13:25–13:45 高山バスセンター着→utateiチェックイン 貸別荘utateiへ移動。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">13:25–13:45</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">高山バスセンター着→UTATEIチェックイン</div>
+<div class="evtMemo">貸別荘UTATEIへ移動</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="13:45–16:00 高山さんまち散策 古い町並で食べ歩きや土産物探し。" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">13:45–16:00</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">高山さんまち散策</div>
+<div class="evtMemo">古い町並で食べ歩きや土産物探し。ハンバーガー屋や日本酒飲み比べなど</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="16:00–16:45 高山陣屋 旧代官所を見学（入場440円）。" data-type="other">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2Zm1 5h-2v6h2V7Zm0 8h-2v2h2v-2Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">16:00–16:45</div>
+<span class="pill">その他</span>
+</div>
+<div class="evtTitle">高山陣屋</div>
+<div class="evtMemo">旧代官所を見学（入場440円）。</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="17:00–18:30 夕食：あじ平 人気居酒屋で名物を味わう" data-type="walk">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M13 5a2 2 0 1 0-4 0 2 2 0 0 0 4 0Zm-1.2 4.2 2.2 1.3a3 3 0 0 1 1.4 2.6V21h-2v-7.7c0-.4-.2-.8-.6-1l-1.4-.8-1.3 3.3 2.1 2.1V21h-2v-2.3l-2.6-2.6a2 2 0 0 1-.5-2.1l1.7-4.3-1.8 1.2-1.1 3.1H3l1.3-3.6a3 3 0 0 1 1.2-1.5l3.2-2.2a3 3 0 0 1 2.9-.3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">17:00–19:00</div>
+<span class="pill">散策</span>
+</div>
+<div class="evtTitle">夕食：あじ平</div>
+<div class="evtMemo">人気居酒屋で名物を味わう</div>
+</div>
+</article>
+<article class="evt" data-day="day3" data-text="19:00–21:00 utateiで休息" data-type="stay">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">19:00–21:00</div>
+<span class="pill">宿</span>
+</div>
+<div class="evtTitle">UTATEIで休息</div>
+<div class="evtMemo">〆のラーメンもおすすめ（M・しらかわ）</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" id="day4">
+<div class="sectionHead">
+<button aria-expanded="false" class="accordionBtn" data-accordion="day4">
+<div class="accLeft">
+<div class="kicker">Day4</div>
+<h2 class="dayTitle">Day4 : 高山 → 新穂高ロープウェイ → 高山</h2>
+<div class="dayMeta">9件 / 07:30–20:10（12時間40分） / 移動: 7時間25分（多）</div>
+</div>
+<div aria-hidden="true" class="accRight"><span class="chev">▾</span></div>
+</button>
+</div>
+<div class="accordionPanel" data-panel="day4" hidden="">
+<div class="quickGrid">
+<div class="quickCard">
+<div class="quickTitle">主要移動（所要）</div>
+<ul class="quickList"><li><span class="mono">バス：高山→新穂高</span><span class="muted">所要 1時間36分</span></li><li><span class="mono">バス：平湯温泉→高山</span><span class="muted">所要 1時間1分</span></li><li><span class="mono">バス：新穂高→平湯温泉</span><span class="muted">所要 42分</span></li></ul>
+</div>
+<div class="quickCard">
+<div class="quickTitle">その日の目玉</div>
+<div class="badges" style="margin-top:8px;"><span class="badge badge-accent">高山</span><span class="badge badge-accent">新穂高</span><span class="badge badge-accent">ロープウェイ</span><span class="badge badge-accent">平湯温泉</span></div>
+<div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 7時間25分）</div>
+</div>
+</div>
+<div aria-label="day4 images" class="gallery"><a class="imgCard" href="assets/images/day4_1.jpg" rel="noreferrer" target="_blank"><img alt="Day4 image 1" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day4_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day4_2.jpg" rel="noreferrer" target="_blank"><img alt="Day4 image 2" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day4_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
+<div class="evtList">
+<article class="evt" data-day="day4" data-text="07:30–08:10 朝食：utateiで自炊 キッチンと食器を活用。朝市やスーパーで仕入れた食材で調理。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">07:30–08:10</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">朝食：UTATEIで自炊</div>
+<div class="evtMemo">キッチンと食器を活用。朝市やスーパーで仕入れた食材で調理。コンビニで買ってバスで食べるのも可能</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="08:40–10:16 バス：高山→新穂高 所要1時間36分。事前予約必須。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">08:40–10:16</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">バス：高山→新穂高</div>
+<div class="evtMemo">所要1時間36分。事前予約必須。</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="10:16–12:20 新穂高ロープウェイ乗車・下山 往復ゴンドラで展望台を観賞し、下山後にバス乗り場で次便を待機。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">10:16–12:20</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">新穂高ロープウェイ乗車・下山</div>
+<div class="evtMemo">往復ゴンドラで展望台を観賞し、下山後にバス乗り場で次便を待機。</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="12:55–13:29 バス：新穂高→平湯温泉 13:46発バスで平湯温泉へ移動。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:55–13:29</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">バス：新穂高→平湯温泉</div>
+<div class="evtMemo">12:55発バスで平湯温泉へ移動。1本後は13:46発</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="13:29–16:28 平湯温泉（アルプス街道平湯・ひらゆの森） 到着後、バスターミナル内のレストラン「アルプスホルン」で昼食を取り、併設の日帰り温泉「ひらゆの森」で露天風呂を楽しむ。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">13:29–16:28</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">平湯温泉（アルプス街道平湯・ひらゆの森）</div>
+<div class="evtMemo">バスターミナル内のレストラン「アルプスホルン」で昼食を取り、併設の日帰り温泉「ひらゆの森」で露天風呂を楽しむ</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="16:28–17:31 バス：平湯温泉→高山 16:28発のバスで高山へ戻る。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">16:28–17:31</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">バス：平湯温泉→高山</div>
+<div class="evtMemo">16:30発のバスで高山へ戻る</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="16:31–17:20 休憩 宿に戻り、着替えや休憩。あるいは駅前散策。" data-type="stay">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 10a3 3 0 1 1 6 0v1h7a2 2 0 0 1 2 2v8h-2v-2H4v2H2v-8a2 2 0 0 1 2-2h3v-1Zm0 3H4v4h16v-4H13v1h-2v-1H7Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">17:31–18:10</div>
+<span class="pill">宿</span>
+</div>
+<div class="evtTitle">休憩</div>
+<div class="evtMemo">宿に戻り、着替えや休憩。あるいは駅前散策</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="18:10–19:20 飛騨の里ライトアップ・バスツアー 濃飛バスの冬季限定ツアーに参加。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">18:10–19:20</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">飛騨の里ライトアップ・バスツアー</div>
+<div class="evtMemo">濃飛バスの冬季限定ツアーに参加。17：30～のものに乗れるならそれでもOK</div>
+</div>
+</article>
+<article class="evt" data-day="day4" data-text="18:45–20:45 夕食：丸明 本店 高山駅徒歩5分の飛騨牛専門店" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">18:45–20:45</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">夕食：丸明 本店</div>
+<div class="evtMemo">奮発して飛騨牛専門店へ！</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<section class="section" id="day5">
+<div class="sectionHead">
+<button aria-expanded="false" class="accordionBtn" data-accordion="day5">
+<div class="accLeft">
+<div class="kicker">Day5</div>
+<h2 class="dayTitle">Day5 : 高山 → 飛騨大鍾乳洞 → 名古屋 → 大阪</h2>
+<div class="dayMeta">10件 / 07:30–22:08（14時間38分） / 移動: 8時間38分（多）</div>
+</div>
+<div aria-hidden="true" class="accRight"><span class="chev">▾</span></div>
+</button>
+</div>
+<div class="accordionPanel" data-panel="day5" hidden="">
+<div class="quickGrid">
+<div class="quickCard">
+<div class="quickTitle">主要移動（所要）</div>
+<ul class="quickList"><li><span class="mono">高速バス：高山→名古屋</span><span class="muted">所要 2時間35分</span></li><li><span class="mono">近鉄特急ひのとり：名古屋→大阪難波</span><span class="muted">所要 2時間8分</span></li><li><span class="mono">バス：高山→飛騨大鍾乳洞</span><span class="muted">所要 20分</span></li></ul>
+</div>
+<div class="quickCard">
+<div class="quickTitle">その日の目玉</div>
+<div class="badges" style="margin-top:8px;"><span class="badge badge-accent">高山</span><span class="badge badge-accent">古い町並</span><span class="badge badge-accent">飛騨大鍾乳洞</span><span class="badge badge-accent">名古屋</span></div>
+<div class="muted" style="margin-top:8px; font-size:12px;">移動の多さ：多（バス/鉄道の合計所要 8時間38分）</div>
+</div>
+</div>
+<div aria-label="day5 images" class="gallery"><a class="imgCard" href="assets/images/day5_1.jpg" rel="noreferrer" target="_blank"><img alt="飛騨大鍾乳洞" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day5_1.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a><a class="imgCard" href="assets/images/day5_2.jpg" rel="noreferrer" target="_blank"><img alt="飛騨の雪景色" crossorigin="anonymous" decoding="async" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%221200%22%20height%3D%22800%22%3E%0A%3Cdefs%3E%0A%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23e6eefc%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6f7fb%22/%3E%0A%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22url%28%23g%29%22/%3E%0A%3Crect%20x%3D%2260%22%20y%3D%2260%22%20width%3D%221080%22%20height%3D%22680%22%20rx%3D%2228%22%20fill%3D%22%23ffffff%22%20opacity%3D%220.65%22/%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22400%22%20font-size%3D%2244%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.70%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3E%E7%94%BB%E5%83%8F%E3%82%92%E9%85%8D%E7%BD%AE%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%3C/text%3E%0A%3Ctext%20x%3D%22600%22%20y%3D%22460%22%20font-size%3D%2228%22%20text-anchor%3D%22middle%22%20fill%3D%22%230b1220%22%20opacity%3D%220.55%22%20font-family%3D%22system-ui%2C%20-apple-system%2C%20Segoe%20UI%2C%20Roboto%2C%20Helvetica%2C%20Arial%22%3Eassets/images/%20%E3%81%AB%E4%BF%9D%E5%AD%98%20%E2%86%92%20%E8%87%AA%E5%8B%95%E3%81%A7%E5%8F%8D%E6%98%A0%3C/text%3E%0A%3C/svg%3E';" referrerpolicy="no-referrer" src="assets/images/day5_2.jpg" data-fallback="<svg xmlns='http://www.w3.org/2000/svg' width='1600' height='900'>
+<defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
+<stop offset='0%' stop-color='#dbeafe'/><stop offset='50%' stop-color='#eef2ff'/><stop offset='100%' stop-color='#fce7f3'/>
+</linearGradient></defs>
+<rect width='100%' height='100%' fill='url(#g)'/>
+<text x='50%' y='50%' text-anchor='middle' dominant-baseline='middle'
+font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill='rgba(11,18,32,.45)'>画像を assets/images に保存 → 自動で反映</text>
+</svg>"></a></div>
+<div class="evtList">
+<article class="evt" data-day="day5" data-text="07:30–08:10 朝食：かじ橋食堂 定食屋。6:00〜15:00。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">07:30–08:10</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">朝食：かじ橋食堂</div>
+<div class="evtMemo">定食屋。6:00〜15:00。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="08:20–08:40 バス：高山→飛騨大鍾乳洞 濃飛バスで移動（所要約20分）。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">08:20–08:40</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">バス：高山→飛騨大鍾乳洞</div>
+<div class="evtMemo">濃飛バスで移動（所要約20分）。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="08:40–10:30 飛騨大鍾乳洞 見学 鍾乳洞内の遊歩道を見学。冷え対策（手袋・滑りにくい靴）推奨。" data-type="sight">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 5c5.5 0 10 7 10 7s-4.5 7-10 7S2 12 2 12s4.5-7 10-7Zm0 2c-3.6 0-6.8 3.9-7.7 5 1 1.1 4.1 5 7.7 5s6.8-3.9 7.7-5c-1-1.1-4.1-5-7.7-5Zm0 2.5A2.5 2.5 0 1 1 9.5 12 2.5 2.5 0 0 1 12 9.5Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">08:40–10:30</div>
+<span class="pill">観光</span>
+</div>
+<div class="evtTitle">飛騨大鍾乳洞 見学</div>
+<div class="evtMemo">鍾乳洞内の遊歩道を見学。冷え対策（手袋・滑りにくい靴）推奨。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="10:40–11:00 バス：飛騨大鍾乳洞→高山 濃飛バスで高山へ戻る。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">10:40–11:00</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">バス：飛騨大鍾乳洞→高山</div>
+<div class="evtMemo">濃飛バスで高山へ戻る。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="11:10–12:10 昼食：味蔵 天国 飛騨牛焼肉店。11:00〜14:30。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">11:10–12:10</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">昼食：味蔵 天国</div>
+<div class="evtMemo">飛騨牛焼肉店。11:00〜14:30。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="12:30–15:45 高山市内散策・土産 古い町並や国分寺を再訪。荷物をまとめてバスセンターへ。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">12:30–15:45</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">高山市内散策・土産</div>
+<div class="evtMemo">古い町並や国分寺を再訪。荷物をまとめてバスセンターへ。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="16:00–18:35 高速バス：高山→名古屋 web割でお得。約2時間35分。" data-type="bus">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v2h-2v-2H10v2H8v-2H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v3h16V6a1 1 0 0 0-1-1H7Zm-1 6v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-5H6Zm3 4a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 9 15Zm8 0a1.5 1.5 0 1 1 0.001-3.001A1.5 1.5 0 0 1 17 15Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">16:00–18:35</div>
+<span class="pill">バス</span>
+</div>
+<div class="evtTitle">高速バス：高山→名古屋</div>
+<div class="evtMemo">Web割でお得。約2時間35分。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="18:40–19:50 夕食：名古屋駅周辺でひつまぶし しら河名駅店（11:00〜14:30／17:00〜21:30、水曜休）や、うな富士名駅店（11:00〜21:00、無休）のうなぎ飯。" data-type="food">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M11 3h2v8a3 3 0 0 1-3 3H9v8H7V3h2v9h1a1 1 0 0 0 1-1V3Zm7 0h2v9a4 4 0 0 1-4 4v6h-2V3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">18:40–19:50</div>
+<span class="pill">グルメ</span>
+</div>
+<div class="evtTitle">夕食：名古屋駅周辺でひつまぶし</div>
+<div class="evtMemo">しら河名駅店（11:00〜14:30／17:00〜21:30、水曜休）や、うな富士名駅店（11:00〜21:00、無休）のうなぎ飯。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="20:00–22:08 近鉄特急ひのとり：名古屋→大阪難波 20:00発、22:08着。プレミアムシート推奨。" data-type="rail">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M7 3h10a4 4 0 0 1 4 4v9a3 3 0 0 1-3 3l2 2v1h-2.5l-2-2h-7l-2 2H4v-1l2-2a3 3 0 0 1-3-3V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v3h14V7a2 2 0 0 0-2-2H7Zm-2 7v4a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-4H5Zm3.5 3a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm7 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">20:00–22:08</div>
+<span class="pill">鉄道</span>
+</div>
+<div class="evtTitle">近鉄特急ひのとり：名古屋→大阪難波</div>
+<div class="evtMemo">20:00発、22:08着。プレミアムシート推奨。</div>
+</div>
+</article>
+<article class="evt" data-day="day5" data-text="22:08 大阪難波駅着 " data-type="other">
+<div aria-hidden="true" class="evtIcon">
+<svg focusable="false" height="22" role="img" viewbox="0 0 24 24" width="22"><path d="M12 2a10 10 0 1 1-10 10A10 10 0 0 1 12 2Zm1 5h-2v6h2V7Zm0 8h-2v2h2v-2Z"></path></svg>
+</div>
+<div class="evtMain">
+<div class="evtTop">
+<div class="evtTime">22:08</div>
+<span class="pill">その他</span>
+</div>
+<div class="evtTitle">大阪難波駅着</div>
+<div class="evtMemo"></div>
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<section class="section" id="cost">
+  <h2 class="sectionTitle">費用</h2>
+  <p class="sectionDesc">
+    1人あたり概算。宿泊は「合計 ÷ 人数」で自動計算。入力を変えると合計が即時更新されます。
+  </p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>宿泊（合計 → 1人あたり）</h3>
+      <table aria-label="lodging table" class="tbl">
+        <thead>
+          <tr><th>内訳</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>INOVA Kanazawa</td>
+            <td style="text-align:right;"><input class="money" id="h_inova" inputmode="numeric" min="0" step="1" type="number" value="35370"/></td>
+            <td>2/24〜2/26（金沢）</td>
+          </tr>
+          <tr>
+            <td>Utatei</td>
+            <td style="text-align:right;"><input class="money" id="h_utatei" inputmode="numeric" min="0" step="1" type="number" value="37422"/></td>
+            <td>2/26〜2/28（高山）</td>
+          </tr>
+          <tr>
+            <td><b>宿泊合計</b></td>
+            <td style="text-align:right;"><b id="h_total">–</b></td>
+            <td>（上2つの合計）</td>
+          </tr>
+          <tr>
+            <td>人数</td>
+            <td style="text-align:right;"><input class="money" id="h_people" inputmode="numeric" min="1" step="1" type="number" value="4"/></td>
+            <td>割り勘人数</td>
+          </tr>
+          <tr>
+            <td><b>1人あたり宿泊</b></td>
+            <td style="text-align:right;">
+              <input class="money" id="c_lodging_pp" inputmode="numeric" min="0" step="1" type="number" value="18198" readonly/>
+            </td>
+            <td>表示用：<b id="c_lodging_pp_fmt">–</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <div class="muted">計算式</div>
+        <div id="calcLodgingFormula" class="mono"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>全体概算（1人あたり）</h3>
+      <table aria-label="budget table" class="tbl">
+        <thead>
+          <tr><th>項目</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>宿泊</td>
+            <td style="text-align:right;"><span class="mono" id="c_lodging_pp_inline">–</span></td>
+            <td>上の「1人あたり宿泊」を反映</td>
+          </tr>
+          <tr>
+            <td>食費</td>
+            <td style="text-align:right;"><input class="money" id="c_food" inputmode="numeric" min="0" step="1" type="number" value="30000"/></td>
+            <td>6,000円/日 × 5日（目安）</td>
+          </tr>
+          <tr>
+            <td>交通＋入場</td>
+            <td style="text-align:right;"><input class="money" id="c_transit" inputmode="numeric" min="0" step="1" type="number" value="36930"/></td>
+            <td>特急・バス・パス・入場料（目安）</td>
+          </tr>
+          <tr>
+            <td>予備</td>
+            <td style="text-align:right;"><input class="money" id="c_buffer" inputmode="numeric" min="0" step="1" type="number" value="0"/></td>
+            <td>お土産/追加移動など</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr><th>合計</th><th style="text-align:right;"><span id="calcTotalVal">–</span></th><th class="muted">（宿泊＋食費＋交通＋予備）</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h3>節約ポイント</h3>
+    <ul class="list">
+      <li>早得7で往路の特急＋新幹線をセット割引</li>
+      <li>京福バス2日フリーきっぷで福井周遊が1,100円お得</li>
+      <li>tabiwaパスで金沢市内バス＋5施設入場が1,770円以上お得</li>
+      <li>新穂高Web限定セットでランチと温泉付き</li>
+      <li>高速バスのWeb割で高山→名古屋が300円割引</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="todo">
+<h2 class="sectionTitle">ToDo</h2>
+<div class="card"><ul class="list"><li>JR早得7きっぷ（サンダーバード＋北陸新幹線）をe5489で7日前までに予約し、4名分を発券</li><li>京福バス2日フリーきっぷを福井駅で購入</li><li>金沢tabiwaパスを事前にアプリで購入し各自のスマホに保存</li><li>金沢→白川郷→高山、高山→名古屋の高速バスを公式サイトで座席指定予約</li><li>新穂高ロープウェイWEB限定セット（バス＋ロープウェイ＋ランチ）を3日前までに予約</li><li>飛騨の宿泊先UTATEIのキッチン用に最低限の調味料・食材を調達（宮川朝市やスーパー）</li><li>名古屋のひつまぶし店は予約不可の場合が多いので早めに並ぶ</li><li>防寒具・滑りにくい靴・常備薬を準備し、天候による変更に備える</li></ul></div>
+</section>
+</main>
+<script>
+    // Defensive cleanup: remove leftover citation strings
+    (function() {
+      const rx = /【[^】]*?†L\d+(?:-L\d+)?】/g;
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(n => {
+        if (rx.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace(rx, '').replace(/\s{2,}/g,' ').trim();
+      });
+    })();
+
+    // Accordion
+    const btns = Array.from(document.querySelectorAll('[data-accordion]'));
+    const panels = new Map(Array.from(document.querySelectorAll('[data-panel]')).map(p => [p.dataset.panel, p]));
+    function setOpen(id, open) {
+      const btn = document.querySelector('[data-accordion="'+id+'"]');
+      const panel = panels.get(id);
+      if (!btn || !panel) return;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      panel.hidden = !open;
+    }
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.accordion;
+        const open = btn.getAttribute('aria-expanded') !== 'true';
+        setOpen(id, open);
+      });
+    });
+    function openFromHash() {
+      const id = (location.hash || '').replace('#','');
+      if (!id) return;
+      if (panels.has(id)) setOpen(id, true);
+      const el = document.getElementById(id);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
+
+    // Print
+    document.getElementById('printBtn')?.addEventListener('click', () => window.print());
+
+    // Filters
+    const q = document.getElementById('q');
+    const hit = document.getElementById('hit');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    let activeType = 'all';
+
+    function applyFilters() {
+      const query = (q.value || '').trim().toLowerCase();
+      const evts = Array.from(document.querySelectorAll('.evt'));
+      let shown = 0;
+      evts.forEach(e => {
+        const typeOk = (activeType === 'all') || (e.dataset.type === activeType);
+        const textOk = !query || (e.dataset.text && e.dataset.text.includes(query));
+        const ok = typeOk && textOk;
+        e.style.display = ok ? '' : 'none';
+        if (ok) shown++;
+      });
+      hit.textContent = `${shown}件`;
+    }
+
+    chips.forEach(c => {
+      c.addEventListener('click', () => {
+        activeType = c.dataset.type;
+        chips.forEach(x => x.classList.toggle('active', x === c));
+        applyFilters();
+      });
+    });
+    document.querySelector('.chip[data-type="all"]')?.classList.add('active');
+    q.addEventListener('input', applyFilters);
+
+    // Scroll spy for nav
+    const navLinks = Array.from(document.querySelectorAll('[data-nav]'));
+    const sections = navLinks.map(a => document.getElementById(a.dataset.nav)).filter(Boolean);
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const id = en.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.dataset.nav === id));
+      });
+    }, { rootMargin: '-50% 0px -45% 0px', threshold: 0.01 });
+    sections.forEach(s => spy.observe(s));
+  
+
+
+</script>
+</body>
+</html>
