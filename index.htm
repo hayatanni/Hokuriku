@@ -1215,103 +1215,98 @@ font-family='system-ui, -apple-system, Segoe UI, sans-serif' font-size='40' fill
 </div>
 </div>
 </section>
-
 <section class="section" id="cost">
-  <h2 class="sectionTitle">費用</h2>
-  <p class="sectionDesc">
+<h2 class="sectionTitle">費用</h2>
+<p class="sectionDesc">
     1人あたり概算。宿泊は「合計 ÷ 人数」で自動計算。入力を変えると合計が即時更新されます。
   </p>
-
-  <div class="grid2">
-    <div class="card">
-      <h3>宿泊（合計 → 1人あたり）</h3>
-      <table aria-label="lodging table" class="tbl">
-        <thead>
-          <tr><th>内訳</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>INOVA Kanazawa</td>
-            <td style="text-align:right;"><input class="money" id="h_inova" inputmode="numeric" min="0" step="1" type="number" value="35370"/></td>
-            <td>2/24〜2/26（金沢）</td>
-          </tr>
-          <tr>
-            <td>Utatei</td>
-            <td style="text-align:right;"><input class="money" id="h_utatei" inputmode="numeric" min="0" step="1" type="number" value="37422"/></td>
-            <td>2/26〜2/28（高山）</td>
-          </tr>
-          <tr>
-            <td><b>宿泊合計</b></td>
-            <td style="text-align:right;"><b id="h_total">–</b></td>
-            <td>（上2つの合計）</td>
-          </tr>
-          <tr>
-            <td>人数</td>
-            <td style="text-align:right;"><input class="money" id="h_people" inputmode="numeric" min="1" step="1" type="number" value="4"/></td>
-            <td>割り勘人数</td>
-          </tr>
-          <tr>
-            <td><b>1人あたり宿泊</b></td>
-            <td style="text-align:right;">
-              <input class="money" id="c_lodging_pp" inputmode="numeric" min="0" step="1" type="number" value="18198" readonly/>
-            </td>
-            <td>表示用：<b id="c_lodging_pp_fmt">–</b></td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="note">
-        <div class="muted">計算式</div>
-        <div id="calcLodgingFormula" class="mono"></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>全体概算（1人あたり）</h3>
-      <table aria-label="budget table" class="tbl">
-        <thead>
-          <tr><th>項目</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>宿泊</td>
-            <td style="text-align:right;"><span class="mono" id="c_lodging_pp_inline">–</span></td>
-            <td>上の「1人あたり宿泊」を反映</td>
-          </tr>
-          <tr>
-            <td>食費</td>
-            <td style="text-align:right;"><input class="money" id="c_food" inputmode="numeric" min="0" step="1" type="number" value="30000"/></td>
-            <td>7,000円/日 × 5日（平均目安）</td>
-          </tr>
-          <tr>
-            <td>交通＋入場</td>
-            <td style="text-align:right;"><input class="money" id="c_transit" inputmode="numeric" min="0" step="1" type="number" value="36930"/></td>
-            <td>特急・バス・パス・入場料（目安）</td>
-          </tr>
-          <tr>
-            <td>予備</td>
-            <td style="text-align:right;"><input class="money" id="c_buffer" inputmode="numeric" min="0" step="1" type="number" value="0"/></td>
-            <td>お土産/追加移動など</td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr><th>合計</th><th style="text-align:right;"><span id="calcTotalVal">–</span></th><th class="muted">（宿泊＋食費＋交通＋予備）</th></tr>
-        </tfoot>
-      </table>
-    </div>
-  </div>
-
-  <div class="card" style="margin-top:16px;">
-    <h3>節約ポイント</h3>
-    <ul class="list">
-      <li>早得7で往路の特急＋新幹線をセット割引</li>
-      <li>京福バス2日フリーきっぷで福井周遊が1,100円お得</li>
-      <li>tabiwaパスで金沢市内バス＋5施設入場が1,770円以上お得</li>
-      <li>新穂高Web限定セットでランチと温泉付き</li>
-      <li>高速バスのWeb割で高山→名古屋が300円割引</li>
-    </ul>
-  </div>
+<div class="grid2">
+<div class="card">
+<h3>宿泊（合計 → 1人あたり）</h3>
+<table aria-label="lodging table" class="tbl">
+<thead>
+<tr><th>内訳</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>INOVA Kanazawa</td>
+<td style="text-align:right;"><input class="money" id="h_inova" inputmode="numeric" min="0" step="1" type="number" value="35370"/></td>
+<td>2/24〜2/26（金沢）</td>
+</tr>
+<tr>
+<td>Utatei</td>
+<td style="text-align:right;"><input class="money" id="h_utatei" inputmode="numeric" min="0" step="1" type="number" value="37422"/></td>
+<td>2/26〜2/28（高山）</td>
+</tr>
+<tr>
+<td><b>宿泊合計</b></td>
+<td style="text-align:right;"><b id="h_total">–</b></td>
+<td>（上2つの合計）</td>
+</tr>
+<tr>
+<td>人数</td>
+<td style="text-align:right;"><input class="money" id="h_people" inputmode="numeric" min="1" step="1" type="number" value="4"/></td>
+<td>割り勘人数</td>
+</tr>
+<tr>
+<td><b>1人あたり宿泊</b></td>
+<td style="text-align:right;">
+<input class="money" id="c_lodging_pp" inputmode="numeric" min="0" readonly="" step="1" type="number" value="18198"/>
+</td>
+<td>表示用：<b id="c_lodging_pp_fmt">–</b></td>
+</tr>
+</tbody>
+</table>
+<div class="note">
+<div class="muted">計算式</div>
+<div class="mono" id="calcLodgingFormula"></div>
+</div>
+</div>
+<div class="card">
+<h3>全体概算（1人あたり）</h3>
+<table aria-label="budget table" class="tbl">
+<thead>
+<tr><th>項目</th><th style="text-align:right;">金額（円）</th><th>メモ</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>宿泊</td>
+<td style="text-align:right;"><span class="mono" id="c_lodging_pp_inline">–</span></td>
+<td>上の「1人あたり宿泊」を反映</td>
+</tr>
+<tr>
+<td>食費</td>
+<td style="text-align:right;"><input class="money" id="c_food" inputmode="numeric" min="0" step="1" type="number" value="30000"/></td>
+<td>6,000円/日 × 5日（目安）</td>
+</tr>
+<tr>
+<td>交通＋入場</td>
+<td style="text-align:right;"><input class="money" id="c_transit" inputmode="numeric" min="0" step="1" type="number" value="36930"/></td>
+<td>特急・バス・パス・入場料（目安）</td>
+</tr>
+<tr>
+<td>予備</td>
+<td style="text-align:right;"><input class="money" id="c_buffer" inputmode="numeric" min="0" step="1" type="number" value="0"/></td>
+<td>お土産/追加移動など</td>
+</tr>
+</tbody>
+<tfoot>
+<tr><th>合計</th><th style="text-align:right;"><span id="calcTotalVal">–</span></th><th class="muted">（宿泊＋食費＋交通＋予備）</th></tr>
+</tfoot>
+</table>
+</div>
+</div>
+<div class="card" style="margin-top:16px;">
+<h3>節約ポイント</h3>
+<ul class="list">
+<li>早得7で往路の特急＋新幹線をセット割引</li>
+<li>京福バス2日フリーきっぷで福井周遊が1,100円お得</li>
+<li>tabiwaパスで金沢市内バス＋5施設入場が1,770円以上お得</li>
+<li>新穂高Web限定セットでランチと温泉付き</li>
+<li>高速バスのWeb割で高山→名古屋が300円割引</li>
+</ul>
+</div>
 </section>
-
 <section class="section" id="todo">
 <h2 class="sectionTitle">ToDo</h2>
 <div class="card"><ul class="list"><li>JR早得7きっぷ（サンダーバード＋北陸新幹線）をe5489で7日前までに予約し、4名分を発券</li><li>京福バス2日フリーきっぷを福井駅で購入</li><li>金沢tabiwaパスを事前にアプリで購入し各自のスマホに保存</li><li>金沢→白川郷→高山、高山→名古屋の高速バスを公式サイトで座席指定予約</li><li>新穂高ロープウェイWEB限定セット（バス＋ロープウェイ＋ランチ）を3日前までに予約</li><li>飛騨の宿泊先UTATEIのキッチン用に最低限の調味料・食材を調達（宮川朝市やスーパー）</li><li>名古屋のひつまぶし店は予約不可の場合が多いので早めに並ぶ</li><li>防寒具・滑りにくい靴・常備薬を準備し、天候による変更に備える</li></ul></div>
